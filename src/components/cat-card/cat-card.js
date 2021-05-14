@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components/macro";
 import Icon from "../styled-elements/icons";
 import UnstyledButton from "../styled-elements/unstyled-button";
-import { QUERIES } from "../../constants";
+
 const CatCard = ({
   url,
   id,
@@ -44,10 +44,6 @@ const Image = styled.img`
   border-radius: 8px;
   height: 275px;
   object-fit: cover;
-
-  @media ${QUERIES.tabletScreens} {
-    height: 325px;
-  }
 `;
 
 const Wrapper = styled.article`
@@ -58,9 +54,6 @@ const Wrapper = styled.article`
 const ImageWrapper = styled.div`
   position: relative;
   width: 275px;
-  @media ${QUERIES.tabletScreens} {
-    width: 325px;
-  }
 `;
 
 const Row = styled.div`

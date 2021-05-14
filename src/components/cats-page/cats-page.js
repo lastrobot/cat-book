@@ -68,6 +68,11 @@ const GridWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
+  justify-content: flex-start;
+
+  @media ${QUERIES.tabletScreens} {
+    justify-content: center;
+  }
 
   @media ${QUERIES.phoneScreens} {
     padding: 16px;
@@ -82,12 +87,7 @@ const MaxWidthWrapper = styled.div`
 
 const Heading = styled.h1`
   font-size: 1.8rem;
-  text-align: left;
-  padding-left: 32px;
-
-  @media ${QUERIES.phoneScreens} {
-    padding-left: 16px;
-  }
+  text-align: center;
 `;
 
 const mapStateToProps = ({ cats }) => {
