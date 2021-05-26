@@ -1,8 +1,20 @@
 import React from "react";
-import styled from "styled-components/macro";
+import  styled from "styled-components/macro";
 import Icon from "../styled-elements/icons";
 import UnstyledButton from "../styled-elements/unstyled-button";
 
+type AppProps = {
+  url: string;
+  id: number;
+  score: number;
+  handleVotes: (id: number, score: number, direction: string) => void;
+  handleFavourite:  (id: number, favId: number) => void;
+  favourite: Favourite;
+};
+
+type Favourite = {
+  id: number;
+}
 const CatCard = ({
   url,
   id,
@@ -10,7 +22,7 @@ const CatCard = ({
   handleVotes,
   favourite,
   handleFavourite,
-}) => {
+}: AppProps) => {
   const favouriteId = favourite ? favourite.id : 0;
   const heartColour = favourite ? "red" : "white";
   return (

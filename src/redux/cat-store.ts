@@ -1,10 +1,29 @@
-import initialState from "./initial-state";
+
+import { AnyAction } from 'redux'
 import * as actionTypes from "./action-types";
 import { API_SETTINGS } from "../constants";
 import { handleResponse } from "./utils";
+import type {  AppDispatch } from './configure-store-dev';
 import { toast } from "react-toastify";
+import type {Cat, Vote} from './types';
 
-const addVotesToCats = (cats, votes) => {
+// Define a type for the slice state
+interface CatState {
+  catList: Array<Cat>,
+   isFetching: boolean,
+   hasError: boolean,
+}
+
+// Define the initial state using that type
+const initialState: CatState = {
+  catList: [],
+    isFetching: false,
+    hasError: false,
+}
+
+
+
+const addVotesToCats = (cats: Array<Cat>, votes: Array<Vote>) => {
   return cats.map((cat) => {
     let votedCat = votes.find((votee) => votee.image_id === cat.id);
     return {
@@ -14,7 +33,7 @@ const addVotesToCats = (cats, votes) => {
   });
 };
 
-export default function catsReducer(state = initialState.cats, action) {
+export default function catsReducer(state = initialState, action :AnyAction) {
   switch (action.type) {
     case actionTypes.BEGIN_CATS_API_CALL:
       return {
@@ -81,7 +100,8 @@ export default function catsReducer(state = initialState.cats, action) {
   }
 }
 
-export const loadCats = () => (dispatch) => {
+export const loadCats = () => (dispatch: AppDispatch) => {
+
   dispatch({ type: actionTypes.BEGIN_CATS_API_CALL });
   return fetch(
     `${API_SETTINGS.baseUrl}${API_SETTINGS.catlistEndpoint}?limit=20&sub_id=${API_SETTINGS.UserId}`,
@@ -102,7 +122,7 @@ export const loadCats = () => (dispatch) => {
     });
 };
 
-export const loadVotes = () => (dispatch) => {
+export const loadVotes = () => (dispatch: AppDispatch) => {
   return fetch(`${API_SETTINGS.baseUrl}${API_SETTINGS.voteEndpoint}`, {
     headers: {
       "x-api-key": API_SETTINGS.apiKey,
@@ -119,7 +139,7 @@ export const loadVotes = () => (dispatch) => {
     });
 };
 
-export const voteCat = (id, score) => (dispatch) => {
+export const voteCat = (id: number, score: number) => (dispatch: AppDispatch) => {
   const catScore = { image_id: id, sub_id: API_SETTINGS.UserId, value: score };
 
   return fetch(`${API_SETTINGS.baseUrl}${API_SETTINGS.voteEndpoint}`, {
@@ -141,7 +161,7 @@ export const voteCat = (id, score) => (dispatch) => {
     });
 };
 
-export const favouriteCat = (id) => (dispatch) => {
+export const favouriteCat = (id:number) => (dispatch: AppDispatch) => {
   const favCat = { image_id: id, sub_id: API_SETTINGS.UserId };
 
   return fetch(`${API_SETTINGS.baseUrl}${API_SETTINGS.favouriteEndpoint}`, {
@@ -167,7 +187,7 @@ export const favouriteCat = (id) => (dispatch) => {
     });
 };
 
-export const unFavouriteCat = (id, favouriteId) => (dispatch) => {
+export const unFavouriteCat = (id: number, favouriteId: number) => (dispatch: AppDispatch) => {
   const favCat = { image_id: id, sub_id: API_SETTINGS.UserId };
 
   return fetch(

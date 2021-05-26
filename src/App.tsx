@@ -1,4 +1,5 @@
 import "./App.css";
+//import * as types from 'styled-components/cssprop';
 import { Route, Switch } from "react-router-dom";
 import UploadFile from "./components/upload-file/upload-file";
 import CatsPage from "./components/cats-page/cats-page";

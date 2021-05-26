@@ -1,6 +1,6 @@
 export const API_SETTINGS = {
   baseUrl: "https://api.thecatapi.com",
-  UserId: "MY_USER_666",
+  UserId: "MY_USER_999",
   uploadEndpoint: "/v1/images/upload",
   voteEndpoint: "/v1/votes",
   catlistEndpoint: "/v1/images",

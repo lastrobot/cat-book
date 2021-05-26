@@ -1,9 +1,28 @@
-import initialState from "./initial-state";
+
+import { AnyAction } from 'redux'
+import type {  AppDispatch } from './configure-store-dev';
 import * as actionTypes from "./action-types";
 import { API_SETTINGS } from "../constants";
 import { handleResponse } from "./utils";
 
-export default function uploadReducer(state = initialState.fileUpload, action) {
+
+// Define a type for the slice state
+interface UploadState {
+  isFetching: boolean,
+    hasError: boolean,
+    errorMessage: string
+    isSuccessful: boolean,
+}
+
+// Define the initial state using that type
+const initialState: UploadState = {
+  isFetching: false,
+    hasError: false,
+    errorMessage: '',
+    isSuccessful: false,
+}
+
+export default function uploadReducer(state = initialState, action: AnyAction) {
   switch (action.type) {
     case actionTypes.BEGIN_UPLOAD_API_CALL:
       return {
@@ -25,17 +44,17 @@ export default function uploadReducer(state = initialState.fileUpload, action) {
         isSuccessful: true,
       };
     case actionTypes.UPLOAD_RESET:
-      return initialState.fileUpload;
+      return initialState;
     default:
       return state;
   }
 }
 
-export const resetUpload = () => (dispatch) => {
+export const resetUpload = () => (dispatch: AppDispatch) => {
   dispatch({ type: actionTypes.UPLOAD_RESET });
 };
 
-export const uploadFileApi = (formData) => (dispatch) => {
+export const uploadFileApi = (formData:any) => (dispatch: AppDispatch) => {
   dispatch({ type: actionTypes.BEGIN_UPLOAD_API_CALL });
 
   return fetch(`${API_SETTINGS.baseUrl}${API_SETTINGS.uploadEndpoint}`, {

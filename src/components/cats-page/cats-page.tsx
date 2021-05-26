@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
-import { connect } from "react-redux";
+import PropTypes from "prop-types";
+
 import styled from "styled-components/macro";
+import { useAppSelector, useAppDispatch } from "../../redux/hooks";
+import type { RootState } from '../../redux/configure-store-dev';
 import {
   loadCats,
   voteCat,
@@ -10,32 +13,42 @@ import {
 import Spinner from "../spinner";
 import CatCard from "../cat-card/cat-card";
 import { QUERIES } from "../../constants";
+import type {Cat} from '../../redux/types';
 
-const CatsPage = ({
-  cats,
-  loadCats,
-  voteCat,
-  favouriteCat,
-  unFavouriteCat,
-  isLoading,
-}) => {
+type AppProps = {
+  isLoading: boolean;
+  loadCats:() => void;
+  voteCat: (id: number, score: number) => void;
+  favouriteCat: (id: number) => void;
+  unFavouriteCat: (id: number, favouriteId: number) => void;
+} 
+
+const CatsPage = ({isLoading,  loadCats, voteCat, favouriteCat, unFavouriteCat} : AppProps) => {
+
+  const dispatch = useAppDispatch()
+
+  const cats: Array<Cat> = useAppSelector(
+    (state:RootState) => state.cats,
+    cats =>  cats.catList,
+  );
+
   useEffect(() => {
-    loadCats();
-  }, [loadCats]);
+    dispatch(loadCats());
+  }, []);
 
-  const voteHandler = (id, score, direction) => {
+  const voteHandler = (id: number, score: number, direction:string) => {
     const newScore =
-      direction === "up" ? parseInt(score) + 1 : parseInt(score) - 1;
-    voteCat(id, newScore);
+      direction === "up" ? score + 1 : score - 1;
+    dispatch(voteCat(id, newScore));
   };
 
-  const toggleFavouriteHandler = (id, favouriteId) => {
+  const toggleFavouriteHandler = (id: number, favouriteId: number) => {
     if (favouriteId === 0) {
-      favouriteCat(id);
+      dispatch(favouriteCat(id));
       return;
     }
 
-    unFavouriteCat(id, favouriteId);
+    dispatch(unFavouriteCat(id, favouriteId));
   };
 
   return (
@@ -74,7 +87,7 @@ const GridWrapper = styled.div`
     justify-content: center;
   }
 
-  @media ${QUERIES.phoneScreens} {
+  @media ${QUERIES.mobileScreens} {
     padding: 16px;
   }
 `;
@@ -90,7 +103,20 @@ const Heading = styled.h1`
   text-align: center;
 `;
 
-const mapStateToProps = ({ cats }) => {
+CatsPage.defaultProps = {
+  cats: [],
+};
+
+CatsPage.propTypes = {
+  cats: PropTypes.arrayOf(PropTypes.object),
+  loadCats: PropTypes.func.isRequired,
+  voteCat: PropTypes.func.isRequired,
+  favouriteCat: PropTypes.func.isRequired,
+  unFavouriteCat: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+};
+
+const mapStateToProps = ({ cats }:  Array<Cat>) => {
   return {
     isLoading: cats.isFetching,
     cats: cats.catList,

@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import { toast } from "react-toastify";
 import Spinner from "../spinner";
 import { API_SETTINGS } from "../../constants";
 
 import { uploadFileApi, resetUpload } from "../../redux/upload-store";
+
+type AppProps = {
+  isLoading: boolean;
+  isSuccessful: boolean;
+  errorMessage: string;
+  resetUpload:() => void;
+  uploadFileApi: (data: any) => void;
+} 
 
 function UploadFile({
   isLoading,
@@ -14,12 +23,12 @@ function UploadFile({
   resetUpload,
   errorMessage,
   isSuccessful,
-  ...props
-}) {
-  const [selectedFile, setSelectedFile] = useState();
-  const [fileUrl, setFileUrl] = useState();
-  const [isSelected, setIsSelected] = useState(false);
-  const [validationError, setValidationError] = useState("");
+}: AppProps) {
+
+  const [selectedFile, setSelectedFile] = useState<any>();
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
+  const [validationError, setValidationError] = useState<string>("");
 
   const history = useHistory();
   const hiddenFileInput = React.useRef(null);
@@ -34,12 +43,16 @@ function UploadFile({
     if (isSuccessful) redirect();
   });
 
-  const changeHandler = (event) => {
-    const file = event.target.files[0];
+  const changeHandler = (e:React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) {
+      return;
+    }
+    const file:any = e.target.files[0];
+
     setValidationError("");
     if (hasExtension(file.name, [".jpg", ".png"])) {
       setSelectedFile(file);
-      setFileUrl(URL.createObjectURL(event.target.files[0]));
+      setFileUrl(URL.createObjectURL(e.target.files[0]));
       setIsSelected(true);
     } else {
       setValidationError("File must be either png or jpg format.");
@@ -59,7 +72,7 @@ function UploadFile({
   //     hiddenFileInput.current.click();
   //   };
 
-  const hasExtension = (fileName, exts) => {
+  const hasExtension = (fileName:string, exts:Array<string>) => {
     var regex = new RegExp("([a-zA-Z0-9s_\\.-:])+(" + exts.join("|") + ")$");
     return regex.test(fileName.toLowerCase());
   };
@@ -174,6 +187,14 @@ const CentredWrapper = styled.div`
   padding: 64px;
   border-radius: 8px;
 `;
+
+UploadFile.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  uploadFileApi: PropTypes.func.isRequired,
+  resetUpload: PropTypes.func.isRequired,
+  errorMessage: PropTypes.string.isRequired,
+  isSuccessful: PropTypes.bool.isRequired,
+};
 
 const mapStateToProps = ({ fileUpload }) => {
   return {

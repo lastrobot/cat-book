@@ -1,3 +1,15 @@
+
+
+// Define a type for the slice state
+interface CatState {
+  value: number
+}
+
+// Define the initial state using that type
+const initialState: CatState = {
+  value: 0
+}
+
 const initialState = {
   cats: {
     catlist: [],
