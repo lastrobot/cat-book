@@ -1,42 +1,44 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+  
 import { useHistory } from "react-router-dom";
-import styled from "styled-components/macro";
+import { useAppSelector, useAppDispatch } from "../../redux/hooks";
+import type { RootState } from '../../redux/configure-store-dev';
+
+import styled from 'styled-components';
 import { toast } from "react-toastify";
 import Spinner from "../spinner";
 import { API_SETTINGS } from "../../constants";
 
 import { uploadFileApi, resetUpload } from "../../redux/upload-store";
 
-type AppProps = {
-  isLoading: boolean;
-  isSuccessful: boolean;
-  errorMessage: string;
-  resetUpload:() => void;
-  uploadFileApi: (data: any) => void;
-} 
 
-function UploadFile({
-  isLoading,
-  uploadFileApi,
-  resetUpload,
-  errorMessage,
-  isSuccessful,
-}: AppProps) {
+function UploadFile() {
 
   const [selectedFile, setSelectedFile] = useState<any>();
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [fileUrl, setFileUrl] = useState<string>('');
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const [validationError, setValidationError] = useState<string>("");
 
   const history = useHistory();
   const hiddenFileInput = React.useRef(null);
+  const dispatch = useAppDispatch()
+
+  const errorMessage: string = useAppSelector(
+    (state:RootState) => state.fileUpload.errorMessage,
+  );
+
+  const isSuccessful: boolean = useAppSelector(
+    (state:RootState) => state.fileUpload.isSuccessful,
+  );
+
+  const isLoading: boolean = useAppSelector(
+    (state:RootState) => state.cats.isFetching,
+  );
 
   useEffect(() => {
     const redirect = async () => {
       setIsSelected(false);
-      await resetUpload();
+      await dispatch(resetUpload());
       toast.success("cat uploaded");
       history.push("/");
     };
@@ -65,7 +67,7 @@ function UploadFile({
     formData.append("file", selectedFile);
     formData.append("sub_id", API_SETTINGS.UserId);
 
-    uploadFileApi(formData);
+    dispatch(uploadFileApi(formData));
   };
 
   //   const handleClick = (event) => {
@@ -132,6 +134,11 @@ const ImageWrapper = styled.div`
   justify-content: center;
 `;
 
+interface StyledBtnProps {
+  type: string | null;
+  alt: string | null;
+}
+
 const Button = styled.button`
   display: inline-block;
   border: 2px solid var(--col-gray-500);
@@ -140,7 +147,7 @@ const Button = styled.button`
   padding: 6px;
 `;
 
-const ButtonLabel = styled.label`
+const ButtonLabel = styled.label<StyledBtnProps>`
   display: inline-block;
   border: 2px solid var(--col-gray-500);
   border-radius: 0.25em;
@@ -171,7 +178,10 @@ const EmptyImage = styled.div`
   border-radius: 8px;
 `;
 
-const SelectedImage = styled.img`
+interface StyledImgProps {
+  src: string | undefined;
+}
+const SelectedImage = styled.img<StyledImgProps>`
   width: 100%;
 `;
 
@@ -188,25 +198,4 @@ const CentredWrapper = styled.div`
   border-radius: 8px;
 `;
 
-UploadFile.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
-  uploadFileApi: PropTypes.func.isRequired,
-  resetUpload: PropTypes.func.isRequired,
-  errorMessage: PropTypes.string.isRequired,
-  isSuccessful: PropTypes.bool.isRequired,
-};
-
-const mapStateToProps = ({ fileUpload }) => {
-  return {
-    isLoading: fileUpload.isFetching,
-    errorMessage: fileUpload.errorMessage,
-    isSuccessful: fileUpload.isSuccessful,
-  };
-};
-
-const mapDispatchToProps = {
-  uploadFileApi,
-  resetUpload,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(UploadFile);
+export default UploadFile;

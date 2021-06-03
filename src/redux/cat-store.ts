@@ -112,7 +112,7 @@ export const loadCats = () => (dispatch: AppDispatch) => {
     }
   )
     .then(handleResponse)
-    .then((cats) => {
+    .then((cats : Array<Cat>) => {
       dispatch({ type: actionTypes.CATS_API_SUCCESS, cats: cats });
       dispatch(loadVotes());
     })

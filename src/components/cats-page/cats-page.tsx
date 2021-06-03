@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import PropTypes from "prop-types";
 
 import styled from "styled-components/macro";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
@@ -15,26 +14,22 @@ import CatCard from "../cat-card/cat-card";
 import { QUERIES } from "../../constants";
 import type {Cat} from '../../redux/types';
 
-type AppProps = {
-  isLoading: boolean;
-  loadCats:() => void;
-  voteCat: (id: number, score: number) => void;
-  favouriteCat: (id: number) => void;
-  unFavouriteCat: (id: number, favouriteId: number) => void;
-} 
 
-const CatsPage = ({isLoading,  loadCats, voteCat, favouriteCat, unFavouriteCat} : AppProps) => {
+const CatsPage = () => {
 
   const dispatch = useAppDispatch()
 
-  const cats: Array<Cat> = useAppSelector(
-    (state:RootState) => state.cats,
-    cats =>  cats.catList,
+  const cats: Nullable<Array<Cat>> = useAppSelector(
+    (state:RootState) => state.cats.catList,
+  );
+
+  const isLoading: boolean = useAppSelector(
+    (state:RootState) => state.cats.isFetching,
   );
 
   useEffect(() => {
     dispatch(loadCats());
-  }, []);
+  }, [dispatch]);
 
   const voteHandler = (id: number, score: number, direction:string) => {
     const newScore =
@@ -103,6 +98,7 @@ const Heading = styled.h1`
   text-align: center;
 `;
 
+/*
 CatsPage.defaultProps = {
   cats: [],
 };
@@ -115,19 +111,9 @@ CatsPage.propTypes = {
   unFavouriteCat: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
 };
+*/
 
-const mapStateToProps = ({ cats }:  Array<Cat>) => {
-  return {
-    isLoading: cats.isFetching,
-    cats: cats.catList,
-  };
-};
 
-const mapDispatchToProps = {
-  loadCats,
-  voteCat,
-  favouriteCat,
-  unFavouriteCat,
-};
 
-export default connect(mapStateToProps, mapDispatchToProps)(CatsPage);
+
+export default CatsPage;
